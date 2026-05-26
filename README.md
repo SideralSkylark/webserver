@@ -25,7 +25,7 @@ This project is educational and intentionally avoids web frameworks such as:
 
 ## Networking & Connections
 
-* [ ] RF01: Listen for TCP connections on a configurable port
+* [x] RF01: Listen for TCP connections on a configurable port
 * [ ] RF02: Accept multiple client connections
 * [ ] RF03: Gracefully close client connections
 
@@ -130,9 +130,9 @@ Goal:
 
 ### Milestones
 
-* [ ] Accept one client
-* [ ] Read request bytes
-* [ ] Respond with hardcoded bytes
+* [x] Accept one client
+* [] Read request bytes
+* [x] Respond with hardcoded bytes
 
 ---
 
@@ -144,9 +144,9 @@ Goal:
 
 ### Milestones
 
-* [ ] Return `HTTP/1.1 200 OK`
-* [ ] Add headers
-* [ ] Add body support
+* [x] Return `HTTP/1.1 200 OK`
+* [x] Add headers
+* [] Add body support
 
 ---
 

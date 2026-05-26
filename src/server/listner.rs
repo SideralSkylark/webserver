@@ -1,22 +1,31 @@
 use anyhow::Result;
 use std::{
-    io::Read,
+    io::Write,
     net::{TcpListener, TcpStream},
 };
 
-fn handle_stream(stream: TcpStream) {
-    stream.bytes().for_each(|x| println!("{:?}", x));
+fn handle_stream(mut stream: TcpStream) {
+    if let Err(e) = stream.write_all(
+        b"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 12\r\n\r\nHello server",
+    ) {
+        println!("failed to write response: {}", e);
+    }
 }
 
-// Todo: add other checks for port (is only numbers and is not empty, then default to 80 if
-// parameter is wrong)
 pub fn listen(port: &str) -> Result<()> {
     let port = sanitize_port(port);
 
     let listner = TcpListener::bind(get_address(&port))?;
 
     for stream in listner.incoming() {
-        handle_stream(stream?);
+        match stream {
+            Ok(stream) => {
+                handle_stream(stream);
+            }
+            Err(e) => {
+                println!("could not establish connection. reason: {}", e);
+            }
+        }
     }
 
     Ok(())
