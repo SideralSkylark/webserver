@@ -9,7 +9,6 @@ use crate::http::parser;
 fn handle_stream(mut stream: TcpStream) -> Result<()> {
     let mut buff = [0u8; 1024];
     let size: usize = stream.read(&mut buff)?;
-    println!("buffer size: {size}");
 
     parser::parse_request(&mut buff[..size]);
 
