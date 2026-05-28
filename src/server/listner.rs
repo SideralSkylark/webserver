@@ -1,15 +1,25 @@
 use anyhow::Result;
 use std::{
-    io::Write,
+    io::{Read, Write},
     net::{TcpListener, TcpStream},
 };
 
-fn handle_stream(mut stream: TcpStream) {
+use crate::http::parser;
+
+fn handle_stream(mut stream: TcpStream) -> Result<()> {
+    let mut buff = [0u8; 1024];
+    let size: usize = stream.read(&mut buff)?;
+    println!("buffer size: {size}");
+
+    parser::parse_request(&mut buff[..size]);
+
     if let Err(e) = stream.write_all(
         b"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 12\r\n\r\nHello server",
     ) {
         println!("failed to write response: {}", e);
     }
+
+    Ok(())
 }
 
 pub fn listen(port: &str) -> Result<()> {
@@ -20,7 +30,7 @@ pub fn listen(port: &str) -> Result<()> {
     for stream in listner.incoming() {
         match stream {
             Ok(stream) => {
-                handle_stream(stream);
+                handle_stream(stream)?;
             }
             Err(e) => {
                 println!("could not establish connection. reason: {}", e);

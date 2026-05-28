@@ -131,7 +131,7 @@ Goal:
 ### Milestones
 
 * [x] Accept one client
-* [] Read request bytes
+* [x] Read request bytes
 * [x] Respond with hardcoded bytes
 
 ---
@@ -146,7 +146,7 @@ Goal:
 
 * [x] Return `HTTP/1.1 200 OK`
 * [x] Add headers
-* [] Add body support
+* [x] Add body support
 
 ---
 
