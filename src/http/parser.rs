@@ -28,8 +28,8 @@ pub struct RequestBody {
 // other two by an empty line b"\r\n\r\n")
 pub fn parse_request(request: &mut [u8]) {
     let mut index = 0;
-    let mut break_counter = 0;
-    let layers = 3;
+    let mut line_start = 0;
+    let mut current_request_layer = 0;
     let mut request_object: HttpRequest = HttpRequest {
         header: RequestHeader {
             request_line: RequestLine {
@@ -46,16 +46,26 @@ pub fn parse_request(request: &mut [u8]) {
 
     while index < request.len() {
         if index + 1 < request.len() && request[index] == b'\r' && request[index + 1] == b'\n' {
-            break_counter += 1;
+            let line = String::from_utf8_lossy(&request[line_start..index]);
 
-            if break_counter == 1 {
-                // request_object.header.method =
-                //     String::from_utf8_lossy(&request[..index]).to_string();
-                // println!("{:?}", request_object);
-            };
+            if current_request_layer == 0 {
+                let mut req_line = line.split_whitespace();
+                request_object.header.request_line.method = String::from_iter(req_line.next());
+                request_object.header.request_line.path = String::from_iter(req_line.next());
+                request_object.header.request_line.version = String::from_iter(req_line.next());
 
+                current_request_layer += 1;
+            } else if line.is_empty() {
+            } else {
+                let mut header_line = line.split(": ");
+                request_object.header.headers.insert(
+                    String::from_iter(header_line.next()),
+                    String::from_iter(header_line.next()),
+                );
+                println!("{:?}", request_object);
+            }
             index += 2;
-
+            line_start = index;
             continue;
         }
 
