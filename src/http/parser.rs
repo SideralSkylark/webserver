@@ -56,13 +56,15 @@ pub fn parse_request(request: &mut [u8]) {
 
                 current_request_layer += 1;
             } else if line.is_empty() {
+                current_request_layer += 1;
+                let body = String::from_utf8_lossy(&request[index + 2..]);
+                request_object.body.content = body.to_string();
             } else {
                 let mut header_line = line.split(": ");
                 request_object.header.headers.insert(
                     String::from_iter(header_line.next()),
                     String::from_iter(header_line.next()),
                 );
-                println!("{:?}", request_object);
             }
             index += 2;
             line_start = index;
@@ -71,4 +73,5 @@ pub fn parse_request(request: &mut [u8]) {
 
         index += 1;
     }
+    println!("{:?}", request_object);
 }
