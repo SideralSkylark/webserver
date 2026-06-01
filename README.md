@@ -33,10 +33,10 @@ This project is educational and intentionally avoids web frameworks such as:
 
 ## HTTP Parsing
 
-* [ ] RF04: Parse HTTP request line
-* [ ] RF05: Parse request method (GET, POST)
-* [ ] RF06: Parse request path
-* [ ] RF07: Parse HTTP headers
+* [x] RF04: Parse HTTP request line
+* [x] RF05: Parse request method (GET, POST)
+* [x] RF06: Parse request path
+* [x] RF07: Parse HTTP headers
 * [ ] RF08: Parse request body
 * [ ] RF09: Handle malformed HTTP requests safely
 
@@ -158,9 +158,9 @@ Goal:
 
 ### Milestones
 
-* [ ] Parse request line
-* [ ] Parse headers
-* [ ] Parse body
+* [x] Parse request line
+* [x] Parse headers
+* [x] Parse body
 * [ ] Handle malformed input
 
 ---
