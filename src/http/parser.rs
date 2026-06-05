@@ -73,5 +73,24 @@ pub fn parse_request(request: &mut [u8]) {
 
         index += 1;
     }
+
+    if is_malformed(&request_object) {
+        println!("invalid request format");
+        return;
+    }
+
     println!("{:?}", request_object);
+}
+
+// for now just check request line, later check headers and given content related headers verify if
+// the body matches
+fn is_malformed(request: &HttpRequest) -> bool {
+    if request.header.request_line.method.is_empty()
+        || request.header.request_line.path.is_empty()
+        || request.header.request_line.version.is_empty()
+    {
+        return true;
+    }
+
+    false
 }
