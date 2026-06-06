@@ -4,19 +4,20 @@ use std::{
     net::{TcpListener, TcpStream},
 };
 
-use crate::http::parser;
+use crate::http::parser::{self, HttpResponse};
+use crate::server::router;
 
 fn handle_stream(mut stream: TcpStream) -> Result<()> {
     let mut buff = [0u8; 1024];
     let size: usize = stream.read(&mut buff)?;
 
-    parser::parse_request(&mut buff[..size]);
+    let parsed_request = parser::parse_request(&mut buff[..size])?;
 
-    if let Err(e) = stream.write_all(
-        b"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 12\r\n\r\nHello server",
-    ) {
-        println!("failed to write response: {}", e);
-    }
+    let result = router::resolve(parsed_request);
+    let response: HttpResponse =
+        parser::create_response(result, String::from("200"), String::from("HTTP/1.1"))?;
+
+    stream.write_all(b"");
 
     Ok(())
 }

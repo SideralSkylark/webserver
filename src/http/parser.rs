@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use anyhow::Ok;
+
 #[derive(Debug)]
 pub struct HttpRequest {
     pub header: RequestHeader,
@@ -24,9 +26,29 @@ pub struct RequestBody {
     pub content: String,
 }
 
+pub struct HttpResponse {
+    header: ResponseHeader,
+    body: ResponseBody,
+}
+
+pub struct ResponseHeader {
+    start_line: StartLine,
+    headers: HashMap<String, String>,
+}
+
+pub struct StartLine {
+    version: String,
+    status_code: String,
+    status_message: String,
+}
+
+pub struct ResponseBody {
+    content: String,
+}
+
 // for requests there is the request line + header (can be n headers) + body (separated from the
 // other two by an empty line b"\r\n\r\n")
-pub fn parse_request(request: &mut [u8]) {
+pub fn parse_request(request: &mut [u8]) -> anyhow::Result<HttpRequest> {
     let mut index = 0;
     let mut line_start = 0;
     let mut current_request_layer = 0;
@@ -76,10 +98,9 @@ pub fn parse_request(request: &mut [u8]) {
 
     if is_malformed(&request_object) {
         println!("invalid request format");
-        return;
     }
 
-    println!("{:?}", request_object);
+    Ok(request_object)
 }
 
 // for now just check request line, later check headers and given content related headers verify if
@@ -93,6 +114,55 @@ fn is_malformed(request: &HttpRequest) -> bool {
     }
 
     false
+}
+
+pub fn create_response(
+    message: String,
+    status_code: String,
+    version: String,
+) -> anyhow::Result<HttpResponse> {
+    let mut content_length = 0;
+    if !message.is_empty() {
+        content_length = message.len()
+    }
+    let mut response = HttpResponse {
+        header: ResponseHeader {
+            start_line: StartLine {
+                version: version,
+                status_code: status_code.clone(),
+                status_message: resolve_status_from(status_code),
+            },
+            headers: HashMap::new(),
+        },
+        body: ResponseBody { content: message },
+    };
+
+    if content_length > 0 {
+        response
+            .header
+            .headers
+            .insert(String::from("Content-Lenght"), content_length.to_string());
+        response
+            .header
+            .headers
+            .insert(String::from("Content-Type"), String::from("text/plain"));
+    }
+
+    Ok(response)
+}
+
+fn resolve_status_from(status_code: String) -> String {
+    if status_code == String::from("200") {
+        return String::from("ok");
+    }
+    if status_code == String::from("404") {
+        return String::from("not found");
+    }
+    if status_code == String::from("500") {
+        return String::from("internal server error");
+    }
+
+    String::new()
 }
 
 #[cfg(test)]
