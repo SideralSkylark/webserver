@@ -94,3 +94,65 @@ fn is_malformed(request: &HttpRequest) -> bool {
 
     false
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn is_malformed_no_method() {
+        let request: HttpRequest = HttpRequest {
+            header: RequestHeader {
+                request_line: RequestLine {
+                    method: String::new(),
+                    path: String::from("/"),
+                    version: String::from("HTTP/1.1"),
+                },
+                headers: HashMap::new(),
+            },
+            body: RequestBody {
+                content: String::new(),
+            },
+        };
+
+        assert_eq!(is_malformed(&request), true)
+    }
+
+    #[test]
+    fn is_malformed_no_path() {
+        let request: HttpRequest = HttpRequest {
+            header: RequestHeader {
+                request_line: RequestLine {
+                    method: String::from("GET"),
+                    path: String::new(),
+                    version: String::from("HTTP/1.1"),
+                },
+                headers: HashMap::new(),
+            },
+            body: RequestBody {
+                content: String::new(),
+            },
+        };
+
+        assert_eq!(is_malformed(&request), true)
+    }
+
+    #[test]
+    fn is_malformed_no_version() {
+        let request: HttpRequest = HttpRequest {
+            header: RequestHeader {
+                request_line: RequestLine {
+                    method: String::from("GET"),
+                    path: String::from("/"),
+                    version: String::new(),
+                },
+                headers: HashMap::new(),
+            },
+            body: RequestBody {
+                content: String::new(),
+            },
+        };
+
+        assert_eq!(is_malformed(&request), true)
+    }
+}
