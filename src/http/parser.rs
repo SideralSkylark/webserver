@@ -71,7 +71,25 @@ pub fn parse_request(request: &mut [u8]) -> anyhow::Result<HttpRequest> {
     };
 
     while index < request.len() {
-        if index + 1 < request.len() && request[index] == b'\r' && request[index + 1] == b'\n' {
+        if index + 3 < request.len()
+            && request[index] == b'\r'
+            && request[index + 1] == b'\n'
+            && request[index + 2] == b'\r'
+            && request[index + 3] == b'\n'
+            && request_object.header.headers.contains_key("Content-Length")
+        {
+            current_request_layer += 1;
+
+            let header = request_object.header.headers.get("Content-Length").unwrap();
+            let content_length: usize = header.parse().unwrap();
+            let body_start = index + 4;
+
+            let body = String::from_utf8_lossy(&request[body_start..body_start + content_length]);
+            request_object.body.content = body.to_string();
+        } else if index + 1 < request.len()
+            && request[index] == b'\r'
+            && request[index + 1] == b'\n'
+        {
             let line = String::from_utf8_lossy(&request[line_start..index]);
 
             if current_request_layer == 0 {
@@ -81,10 +99,6 @@ pub fn parse_request(request: &mut [u8]) -> anyhow::Result<HttpRequest> {
                 request_object.header.request_line.version = String::from_iter(req_line.next());
 
                 current_request_layer += 1;
-            } else if line.is_empty() {
-                current_request_layer += 1;
-                let body = String::from_utf8_lossy(&request[index + 2..]);
-                request_object.body.content = body.to_string();
             } else {
                 let mut header_line = line.split(": ");
                 request_object.header.headers.insert(
@@ -183,7 +197,7 @@ fn resolve_status_from(status_code: String) -> String {
         return String::from("OK");
     }
     if status_code == String::from("404") {
-        return String::from("not found");
+        return String::from("NOT FOUND");
     }
     if status_code == String::from("500") {
         return String::from("internal server error");

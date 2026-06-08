@@ -7,15 +7,27 @@ use std::{
 use crate::http::parser::{self, HttpResponse};
 use crate::server::router;
 
+//maybe use a dynamic buffer to avoid overflowing
 fn handle_stream(mut stream: TcpStream) -> Result<()> {
     let mut buff = [0u8; 1024];
     let size: usize = stream.read(&mut buff)?;
 
     let parsed_request = parser::parse_request(&mut buff[..size])?;
-
+    println!("{:?}", parsed_request);
     let result = router::resolve(parsed_request);
-    let response: HttpResponse =
-        parser::create_response(result, String::from("200"), String::from("HTTP/1.1"))?;
+
+    let response: HttpResponse;
+
+    if result.is_empty() {
+        response = parser::create_response(
+            String::from("Resource not found"),
+            String::from("404"),
+            String::from("HTTP/1.1"),
+        )?;
+    } else {
+        response = parser::create_response(result, String::from("200"), String::from("HTTP/1.1"))?;
+    }
+
     let response_buffer = parser::serialize_response(response);
 
     stream.write_all(&response_buffer)?;

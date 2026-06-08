@@ -174,7 +174,7 @@ Goal:
 ### Milestones
 
 * [x] Method/path matching
-* [ ] 404 handling
+* [x] 404 handling
 * [ ] Route parameters
 
 ---
