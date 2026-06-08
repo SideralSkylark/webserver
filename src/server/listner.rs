@@ -16,8 +16,9 @@ fn handle_stream(mut stream: TcpStream) -> Result<()> {
     let result = router::resolve(parsed_request);
     let response: HttpResponse =
         parser::create_response(result, String::from("200"), String::from("HTTP/1.1"))?;
+    let response_buffer = parser::serialize_response(response);
 
-    stream.write_all(b"");
+    stream.write_all(&response_buffer)?;
 
     Ok(())
 }

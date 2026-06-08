@@ -26,24 +26,28 @@ pub struct RequestBody {
     pub content: String,
 }
 
+#[derive(Debug)]
 pub struct HttpResponse {
-    header: ResponseHeader,
-    body: ResponseBody,
+    pub header: ResponseHeader,
+    pub body: ResponseBody,
 }
 
+#[derive(Debug)]
 pub struct ResponseHeader {
-    start_line: StartLine,
-    headers: HashMap<String, String>,
+    pub start_line: StartLine,
+    pub headers: HashMap<String, String>,
 }
 
+#[derive(Debug)]
 pub struct StartLine {
-    version: String,
-    status_code: String,
-    status_message: String,
+    pub version: String,
+    pub status_code: String,
+    pub status_message: String,
 }
 
+#[derive(Debug)]
 pub struct ResponseBody {
-    content: String,
+    pub content: String,
 }
 
 // for requests there is the request line + header (can be n headers) + body (separated from the
@@ -141,7 +145,7 @@ pub fn create_response(
         response
             .header
             .headers
-            .insert(String::from("Content-Lenght"), content_length.to_string());
+            .insert(String::from("Content-Length"), content_length.to_string());
         response
             .header
             .headers
@@ -151,9 +155,32 @@ pub fn create_response(
     Ok(response)
 }
 
+pub fn serialize_response(response: HttpResponse) -> Vec<u8> {
+    let mut str = String::new();
+    let line_break = String::from("\r\n");
+    let header_split = String::from(": ");
+    let space = String::from(" ");
+    str.push_str(&response.header.start_line.version);
+    str.push_str(&space);
+    str.push_str(&response.header.start_line.status_code);
+    str.push_str(&space);
+    str.push_str(&response.header.start_line.status_message);
+    str.push_str(&line_break);
+    for header in response.header.headers {
+        str.push_str(&header.0);
+        str.push_str(&header_split);
+        str.push_str(&header.1);
+        str.push_str(&line_break);
+    }
+    str.push_str(&line_break);
+    str.push_str(&response.body.content);
+
+    Vec::from(str)
+}
+
 fn resolve_status_from(status_code: String) -> String {
     if status_code == String::from("200") {
-        return String::from("ok");
+        return String::from("OK");
     }
     if status_code == String::from("404") {
         return String::from("not found");

@@ -173,7 +173,7 @@ Goal:
 
 ### Milestones
 
-* [ ] Method/path matching
+* [x] Method/path matching
 * [ ] 404 handling
 * [ ] Route parameters
 
