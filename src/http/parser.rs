@@ -99,7 +99,7 @@ pub fn parse_request(request: &mut [u8]) -> anyhow::Result<HttpRequest> {
                 request_object.header.request_line.version = String::from_iter(req_line.next());
 
                 current_request_layer += 1;
-            } else {
+            } else if !line.is_empty() {
                 let mut header_line = line.split(": ");
                 request_object.header.headers.insert(
                     String::from_iter(header_line.next()),
