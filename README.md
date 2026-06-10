@@ -37,27 +37,27 @@ This project is educational and intentionally avoids web frameworks such as:
 * [x] RF05: Parse request method (GET, POST)
 * [x] RF06: Parse request path
 * [x] RF07: Parse HTTP headers
-* [ ] RF08: Parse request body
-* [ ] RF09: Handle malformed HTTP requests safely
+* [x] RF08: Parse request body
+* [x] RF09: Handle malformed HTTP requests safely
 
 ---
 
 ## Routing
 
-* [ ] RF10: Route requests based on method + path
-* [ ] RF11: Implement `GET /`
-* [ ] RF12: Implement `GET /health`
-* [ ] RF13: Implement `POST /echo`
-* [ ] RF14: Return proper 404 responses for unknown routes
+* [x] RF10: Route requests based on method + path
+* [x] RF11: Implement `GET /`
+* [x] RF12: Implement `GET /health`
+* [x] RF13: Implement `POST /echo`
+* [x] RF14: Return proper 404 responses for unknown routes
 
 ---
 
 ## Responses
 
-* [ ] RF15: Generate valid HTTP responses
-* [ ] RF16: Return correct status codes
-* [ ] RF17: Return response headers
-* [ ] RF18: Return plain text responses
+* [x] RF15: Generate valid HTTP responses
+* [x] RF16: Return correct status codes
+* [x] RF17: Return response headers
+* [x] RF18: Return plain text responses
 
 ---
 
