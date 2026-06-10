@@ -29,19 +29,30 @@ pub fn resolve(request: HttpRequest) -> anyhow::Result<HttpResponse> {
 
         let iter = request.header.request_line.path.split("/users/");
         let last_section = iter.last().unwrap();
-        let user_id: u32 = last_section.parse().unwrap();
 
-        if map.contains_key(&user_id) {
-            return parser::create_response(
-                String::from(map.get(&user_id).unwrap()),
-                String::from("200"),
-                String::from("HTTP/1.1"),
-            );
+        match last_section.parse::<u32>() {
+            Ok(id) => {
+                // look for user
+                if map.contains_key(&id) {
+                    return parser::create_response(
+                        String::from(map.get(&id).unwrap()),
+                        String::from("200"),
+                        String::from("HTTP/1.1"),
+                    );
+                }
+            }
+            Err(_) => {
+                return parser::create_response(
+                    String::from("Invalid argument"),
+                    String::from("400"),
+                    String::from("HTTP/1.1"),
+                );
+            }
         }
 
         return parser::create_response(
             String::from("No user with such id"),
-            String::from("200"),
+            String::from("404"),
             String::from("HTTP/1.1"),
         );
     } else if request.header.request_line.method == String::from("POST")
