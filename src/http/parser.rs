@@ -71,18 +71,18 @@ pub fn parse_request(request: &mut [u8]) -> anyhow::Result<HttpRequest> {
     };
 
     while index < request.len() {
-        if index + 3 < request.len()
+        if index + 1 < request.len()
             && request[index] == b'\r'
             && request[index + 1] == b'\n'
-            && request[index + 2] == b'\r'
-            && request[index + 3] == b'\n'
+            && request[index - 1] == b'\n'
+            && request[index - 2] == b'\r'
             && request_object.header.headers.contains_key("Content-Length")
         {
             current_request_layer += 1;
 
             let header = request_object.header.headers.get("Content-Length").unwrap();
             let content_length: usize = header.parse().unwrap();
-            let body_start = index + 4;
+            let body_start = index + 2;
 
             let body = String::from_utf8_lossy(&request[body_start..body_start + content_length]);
             request_object.body.content = body.to_string();
