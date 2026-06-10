@@ -1,16 +1,24 @@
 use std::collections::HashMap;
 
-use crate::http::parser::HttpRequest;
+use crate::http::parser::{self, HttpRequest, HttpResponse};
 
-pub fn resolve(request: HttpRequest) -> String {
+pub fn resolve(request: HttpRequest) -> anyhow::Result<HttpResponse> {
     if request.header.request_line.method == String::from("GET")
         && request.header.request_line.path == String::from("/")
     {
-        return String::from("hello server");
+        return parser::create_response(
+            String::from("Hello server"),
+            String::from("200"),
+            String::from("HTTP/1.1"),
+        );
     } else if request.header.request_line.method == String::from("GET")
         && request.header.request_line.path == String::from("/health")
     {
-        return String::from("web server up");
+        return parser::create_response(
+            String::from("Server up"),
+            String::from("200"),
+            String::from("HTTP/1.1"),
+        );
     } else if request.header.request_line.method == String::from("GET")
         && request.header.request_line.path.contains("/users")
     {
@@ -24,15 +32,31 @@ pub fn resolve(request: HttpRequest) -> String {
         let user_id: u32 = last_section.parse().unwrap();
 
         if map.contains_key(&user_id) {
-            return String::from(map.get(&user_id).unwrap());
+            return parser::create_response(
+                String::from(map.get(&user_id).unwrap()),
+                String::from("200"),
+                String::from("HTTP/1.1"),
+            );
         }
 
-        return String::from("No user with such id");
+        return parser::create_response(
+            String::from("No user with such id"),
+            String::from("200"),
+            String::from("HTTP/1.1"),
+        );
     } else if request.header.request_line.method == String::from("POST")
         && request.header.request_line.path == String::from("/echo")
     {
-        return String::from(request.body.content);
+        return parser::create_response(
+            String::from(request.body.content),
+            String::from("200"),
+            String::from("HTTP/1.1"),
+        );
     }
 
-    String::new()
+    parser::create_response(
+        String::from("Resource not found"),
+        String::from("404"),
+        String::from("HTTP/1.1"),
+    )
 }
