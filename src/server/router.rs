@@ -5,7 +5,8 @@ use crate::http::parser::{self, HttpRequest, HttpResponse};
 pub fn resolve(request: HttpRequest) -> anyhow::Result<HttpResponse> {
     if request.header.request_line.method == "GET" && request.header.request_line.path == "/" {
         return parser::create_response(
-            String::from("Hello server"),
+            String::from("text/html"),
+            String::from("<html><head></head><body>Hello server</body></html>"),
             String::from("200"),
             String::from("HTTP/1.1"),
         );
@@ -13,6 +14,7 @@ pub fn resolve(request: HttpRequest) -> anyhow::Result<HttpResponse> {
         && request.header.request_line.path == "/health"
     {
         return parser::create_response(
+            String::from("text/plain"),
             String::from("Server up"),
             String::from("200"),
             String::from("HTTP/1.1"),
@@ -33,6 +35,7 @@ pub fn resolve(request: HttpRequest) -> anyhow::Result<HttpResponse> {
                 // look for user
                 if map.contains_key(&id) {
                     return parser::create_response(
+                        String::from("text/plain"),
                         String::from(map.get(&id).unwrap()),
                         String::from("200"),
                         String::from("HTTP/1.1"),
@@ -41,6 +44,7 @@ pub fn resolve(request: HttpRequest) -> anyhow::Result<HttpResponse> {
             }
             Err(_) => {
                 return parser::create_response(
+                    String::from("text/plain"),
                     String::from("Invalid argument"),
                     String::from("400"),
                     String::from("HTTP/1.1"),
@@ -49,6 +53,7 @@ pub fn resolve(request: HttpRequest) -> anyhow::Result<HttpResponse> {
         }
 
         return parser::create_response(
+            String::from("text/plain"),
             String::from("No user with such id"),
             String::from("404"),
             String::from("HTTP/1.1"),
@@ -57,6 +62,7 @@ pub fn resolve(request: HttpRequest) -> anyhow::Result<HttpResponse> {
         && request.header.request_line.path == "/echo"
     {
         return parser::create_response(
+            String::from("text/plain"),
             request.body.content,
             String::from("200"),
             String::from("HTTP/1.1"),
@@ -64,6 +70,7 @@ pub fn resolve(request: HttpRequest) -> anyhow::Result<HttpResponse> {
     }
 
     parser::create_response(
+        String::from("text/plain"),
         String::from("Resource not found"),
         String::from("404"),
         String::from("HTTP/1.1"),

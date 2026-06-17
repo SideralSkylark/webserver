@@ -135,6 +135,7 @@ fn is_malformed(request: &HttpRequest) -> bool {
 }
 
 pub fn create_response(
+    content_type: String,
     message: String,
     status_code: String,
     version: String,
@@ -163,7 +164,7 @@ pub fn create_response(
         response
             .header
             .headers
-            .insert(String::from("Content-Type"), String::from("text/plain"));
+            .insert(String::from("Content-Type"), content_type);
     }
 
     Ok(response)
