@@ -3,23 +3,21 @@ use std::collections::HashMap;
 use crate::http::parser::{self, HttpRequest, HttpResponse};
 
 pub fn resolve(request: HttpRequest) -> anyhow::Result<HttpResponse> {
-    if request.header.request_line.method == String::from("GET")
-        && request.header.request_line.path == String::from("/")
-    {
+    if request.header.request_line.method == "GET" && request.header.request_line.path == "/" {
         return parser::create_response(
             String::from("Hello server"),
             String::from("200"),
             String::from("HTTP/1.1"),
         );
-    } else if request.header.request_line.method == String::from("GET")
-        && request.header.request_line.path == String::from("/health")
+    } else if request.header.request_line.method == "GET"
+        && request.header.request_line.path == "/health"
     {
         return parser::create_response(
             String::from("Server up"),
             String::from("200"),
             String::from("HTTP/1.1"),
         );
-    } else if request.header.request_line.method == String::from("GET")
+    } else if request.header.request_line.method == "GET"
         && request.header.request_line.path.contains("/users")
     {
         let mut map = HashMap::new();
@@ -55,11 +53,11 @@ pub fn resolve(request: HttpRequest) -> anyhow::Result<HttpResponse> {
             String::from("404"),
             String::from("HTTP/1.1"),
         );
-    } else if request.header.request_line.method == String::from("POST")
-        && request.header.request_line.path == String::from("/echo")
+    } else if request.header.request_line.method == "POST"
+        && request.header.request_line.path == "/echo"
     {
         return parser::create_response(
-            String::from(request.body.content),
+            request.body.content,
             String::from("200"),
             String::from("HTTP/1.1"),
         );

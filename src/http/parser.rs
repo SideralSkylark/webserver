@@ -146,7 +146,7 @@ pub fn create_response(
     let mut response = HttpResponse {
         header: ResponseHeader {
             start_line: StartLine {
-                version: version,
+                version,
                 status_code: status_code.clone(),
                 status_message: resolve_status_from(status_code),
             },
@@ -193,13 +193,13 @@ pub fn serialize_response(response: HttpResponse) -> Vec<u8> {
 }
 
 fn resolve_status_from(status_code: String) -> String {
-    if status_code == String::from("200") {
+    if status_code == "200" {
         return String::from("OK");
     }
-    if status_code == String::from("404") {
+    if status_code == "404" {
         return String::from("NOT FOUND");
     }
-    if status_code == String::from("500") {
+    if status_code == "500" {
         return String::from("internal server error");
     }
 
